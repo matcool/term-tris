@@ -3,8 +3,9 @@ from piece import *
 from constants import *
 
 class Field:
-	def __init__(self, screen):
+	def __init__(self, screen, Input=None):
 		self.screen = screen
+		self.Input = Input
 		self.width = 10
 		self.height = 20
 		self.hidden = 2

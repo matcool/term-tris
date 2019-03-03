@@ -1,13 +1,4 @@
 from constants import *
-import Input
-
-Input.bind('left', 'left')
-Input.bind('right', 'right')
-Input.bind('down', 'softDrop')
-Input.bind('up', 'hardDrop')
-Input.bind('x', 'rotateCw')
-Input.bind('z', 'rotateCcw')
-Input.bind('c', 'hold')
 
 class Timer:
 	def __init__(self, after, loop=True):
@@ -116,35 +107,33 @@ class Piece:
 		return False
 
 	def update(self, key):
-		Input.update()
-
-		if Input.pressed('hardDrop'):
+		if self.field.Input.pressed('hardDrop'):
 			while self.move('down'): pass
 			self.set()
 
-		if Input.down('softDrop'):
+		if self.field.Input.down('softDrop'):
 			if self.softDropT.check():
 				self.move('down')
 
-		if Input.down('left') or Input.down('right'):
+		if self.field.Input.down('left') or self.field.Input.down('right'):
 			das = self.dasT.check()
 			arr = self.arrT.check()
 		else:
 			self.dasT.reset()
 			self.arrT.reset()
 
-		if Input.pressed('left') or (Input.down('left') and das and arr):
+		if self.field.Input.pressed('left') or (self.field.Input.down('left') and das and arr):
 			if das and self.arrT.after == -1: 
 				while self.move('left'): pass
 			else: self.move('left')
-		if Input.pressed('right') or (Input.down('right') and das and arr):
+		if self.field.Input.pressed('right') or (self.field.Input.down('right') and das and arr):
 			if das and self.arrT.after == -1: 
 				while self.move('right'): pass
 			else: self.move('right')
 
-		if Input.pressed('rotateCcw'):
+		if self.field.Input.pressed('rotateCcw'):
 			self.rotate('left')
-		if Input.pressed('rotateCw'):
+		if self.field.Input.pressed('rotateCw'):
 			self.rotate('right')
 
 		if self.collides('down'):
