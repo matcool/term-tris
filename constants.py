@@ -45,6 +45,27 @@ Colors = {
 	'T': 5,
 	'Z': 1
 }
+def updateColors(screen):
+	global Colors
+	if screen.colours == 256:
+		Colors.update({
+			'I': 14,
+			'J': 12,
+			'L': 208,
+			'O': 11,
+			'S': 10,
+			'T': 13,
+			'Z': 9
+		})
+		Colors.update({
+			'IGhost': 6,
+			'JGhost': 4,
+			'LGhost': 166,
+			'OGhost': 3,
+			'SGhost': 2,
+			'TGhost': 5,
+			'ZGhost': 1
+		})
 
 Wallkick = {
     'I': [

@@ -52,6 +52,8 @@ class Piece:
 		self.dasT = Timer(30, loop=False)
 		self.arrT = Timer(0)
 
+		updateColors(self.field.screen)
+
 	def rotate(self, dir):
 		newShape = [[0 for _ in range(self.size)] for _ in range(self.size)]
 		for y in range(self.size):
@@ -172,8 +174,10 @@ class Piece:
 				if self.shape[y][x] == 0:
 					continue
 				# draw ghost
+				c = Colors.get(self.type+'Ghost')
+				if c == None: c = Colors[self.type]
 				screen.print_at(' '*2, self.x * 2 + self.field.x + x * 2, hardDropY + self.field.y + y - self.field.hidden,
-								bg=Colors[self.type])
+								bg=c)
 
 				screen.print_at(' '*2, self.x * 2 + self.field.x + x * 2, self.y + self.field.y + y - self.field.hidden,
 								bg=Colors[self.type])

@@ -21,6 +21,8 @@ class Field:
 		self.held = None
 		self.hasHeld = False
 
+		updateColors(self.screen)
+
 	def outside(self, x, y):
 		return x < 0 or x >= self.width or y < 0 or y >= self.height + self.hidden
 
