@@ -115,21 +115,25 @@ class Piece:
 			if self.softDropT.check():
 				self.move('down')
 
-		if self.field.Input.down('left') or self.field.Input.down('right'):
+		if self.field.Input.down('left') and not self.field.Input.pressed('right'):
+			if self.field.Input.pressed('left'): self.dasT.reset()
 			das = self.dasT.check()
-			arr = self.arrT.check()
+			if das and self.arrT.after == -1: 
+				while self.move('left'): pass
+			elif self.field.Input.pressed('left') or (das and self.arrT.check()):
+				self.move('left')
+
+		elif self.field.Input.down('right') and not self.field.Input.pressed('left'):
+			if self.field.Input.pressed('right'): self.dasT.reset()
+			das = self.dasT.check()
+			if das and self.arrT.after == -1: 
+				while self.move('right'): pass
+			elif self.field.Input.pressed('right') or (das and self.arrT.check()):
+				self.move('right')
+
 		else:
 			self.dasT.reset()
 			self.arrT.reset()
-
-		if self.field.Input.pressed('left') or (self.field.Input.down('left') and das and arr):
-			if das and self.arrT.after == -1: 
-				while self.move('left'): pass
-			else: self.move('left')
-		if self.field.Input.pressed('right') or (self.field.Input.down('right') and das and arr):
-			if das and self.arrT.after == -1: 
-				while self.move('right'): pass
-			else: self.move('right')
 
 		if self.field.Input.pressed('rotateCcw'):
 			self.rotate('left')
