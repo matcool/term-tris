@@ -3,9 +3,8 @@ from asciimatics.event import KeyboardEvent
 from field import Field
 
 def background(screen,color=0):
-    for x in range(screen.width):
-        for y in range(screen.height):
-            screen.print_at(' ', x, y, bg=color)
+    for y in range(screen.height):
+        screen.print_at(' '*screen.width, 0, y, bg=color)
 
 def main(screen):
     field = Field(screen)

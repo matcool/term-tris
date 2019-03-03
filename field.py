@@ -9,7 +9,7 @@ class Field:
 		self.height = 20
 		self.hidden = 2
 		self.grid = [None for _ in range((self.height + self.hidden) * self.width)]
-		self.x = screen.width//2 - self.width // 2
+		self.x = screen.width // 2 - self.width
 		self.y = 2
 
 		self.pieces = list('IJLOSTZ')
@@ -94,7 +94,7 @@ class Field:
 				# elif c == ' ':
 				# 	if (x + y) % 2 == 0:
 				# 		c = '#'
-				self.screen.print_at(c, x + self.x,y + self.y, bg=bg)
+				self.screen.print_at(c*2, x * 2 + self.x, y + self.y, bg=bg)
 
 		self.active.show()
 
@@ -102,19 +102,19 @@ class Field:
 		yOff = 0
 		for p in self.getUpcoming(False, 5):
 			shape = Shapes[p]
-			xOff = self.screen.width // 2 + self.width // 2
+			xOff = self.screen.width // 2 + self.width
 			for y, row in enumerate(shape):
 				for x, cell in enumerate(row):
 					if cell == 1:
-						self.screen.print_at(' ', x + xOff + 1, y + yOff + self.y, bg=Colors[p])
+						self.screen.print_at(' '*2, x*2 + xOff + 1, y + yOff + self.y, bg=Colors[p])
 			yOff += len(shape)
 			if p == 'O': yOff += 1
 
 		# held
 		if self.held:
 			shape = Shapes[self.held]
-			xOff = self.screen.width // 2 - self.width // 2 - len(shape) - 2
+			xOff = self.screen.width // 2 - self.width - len(shape) - 4
 			for y, row in enumerate(shape):
 				for x, cell in enumerate(row):
 					if cell == 1:
-						self.screen.print_at(' ', x + xOff, y + self.y, bg=Colors[self.held])
+						self.screen.print_at(' '*2, x * 2 + xOff, y + self.y, bg=Colors[self.held])

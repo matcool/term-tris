@@ -172,9 +172,9 @@ class Piece:
 				if self.shape[y][x] == 0:
 					continue
 				# draw ghost
-				screen.print_at(' ', self.x + self.field.x + x, hardDropY + self.field.y + y - self.field.hidden,
+				screen.print_at(' '*2, self.x * 2 + self.field.x + x * 2, hardDropY + self.field.y + y - self.field.hidden,
 								bg=Colors[self.type])
 
-				screen.print_at(' ', self.x + self.field.x + x, self.y + self.field.y + y - self.field.hidden,
+				screen.print_at(' '*2, self.x * 2 + self.field.x + x * 2, self.y + self.field.y + y - self.field.hidden,
 								bg=Colors[self.type])
 
