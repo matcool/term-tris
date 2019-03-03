@@ -1,31 +1,47 @@
+# big copy paste of this: https://github.com/deagahelio/hmbg-input
 import keyboard
 
-PREVDOWN = []
-DOWN = []
-UP = []
+class Action:
+    def __init__(self, name):
+        self.name = name
+        self.bound = []
+        self.down = False
+        self.pressed = False
+        self.released = False
 
-def _callback(event):
-    global DOWN, UP
-    if event.event_type == keyboard.KEY_DOWN:
-        if event.name not in DOWN: DOWN.append(event.name)
-    else:
-        if event.name not in UP: UP.append(event.name)
+    def bind(self, key):
+        self.bound.append(key)
 
-keyboard.hook(_callback)
+    def update(self):
+        self.pressed = False
+        self.released = False
 
-def pressed(name):
-    return name in DOWN and name not in PREVDOWN
+        for key in self.bound:
+            if keyboard.is_pressed(key):
+                if not self.pressed and not self.down:
+                    self.pressed = True
 
-def released(name):
-    return name in UP
+                self.down = True
+                return
 
-def down(name):
-    return name in DOWN
+        if not self.released and self.down:
+            self.released = True
+
+        self.down = False
+
+actions = {}
+
+def bind(key, action):
+    global actions
+    if actions.get(action) == None:
+        actions[action] = Action(action)
+    actions[action].bind(key)
+
+def pressed(action): return actions[action].pressed
+def released(action): return actions[action].released
+def down(action): return actions[action].down
 
 def update():
-    global DOWN, UP, PREVDOWN
-    PREVDOWN = DOWN.copy()
-    for i in UP.copy():
-        if i in DOWN:
-            DOWN.remove(i)
-            UP.remove(i)
+    global actions
+    for action in actions.values():
+        action.update()

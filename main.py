@@ -1,7 +1,6 @@
 from asciimatics.screen import Screen
 from asciimatics.event import KeyboardEvent
 from field import Field
-from piece import Piece
 
 def background(screen,color=0):
     for x in range(screen.width):

@@ -1,6 +1,14 @@
 from constants import *
 import Input
 
+Input.bind('left', 'left')
+Input.bind('right', 'right')
+Input.bind('down', 'softDrop')
+Input.bind('up', 'hardDrop')
+Input.bind('x', 'rotateCw')
+Input.bind('z', 'rotateCcw')
+Input.bind('c', 'hold')
+
 class Timer:
 	def __init__(self, after, loop=True):
 		self.timer = 0
@@ -58,12 +66,12 @@ class Piece:
 		self.shape = newShape
 
 		prevRot = self.rotation
-		self.rotation = (self.rotation + 1 if dir == 'right' else -1) % 4
+		self.rotation = (self.rotation + (1 if dir == 'right' else -1)) % 4
 
 		wallkick = Wallkick.get(self.type)
 		if wallkick == None: wallkick = Wallkick['default']
 
-		testOffset = (2 * prevRot + 0 if dir == 'right' else -1) % 8
+		testOffset = (2 * prevRot + (0 if dir == 'right' else -1)) % 8
 		for test in wallkick:
 			offset = test[testOffset]
 			if not self.collides(None, *offset):
@@ -106,11 +114,13 @@ class Piece:
 		return False
 
 	def update(self, key):
-		if Input.pressed('up'):
+		Input.update()
+
+		if Input.pressed('hardDrop'):
 			while self.move('down'): pass
 			self.set()
 
-		if Input.down('down'):
+		if Input.down('softDrop'):
 			if self.softDropT.check():
 				self.move('down')
 
@@ -120,6 +130,7 @@ class Piece:
 		else:
 			self.dasT.reset()
 			self.arrT.reset()
+
 		if Input.pressed('left') or (Input.down('left') and das and arr):
 			if das and self.arrT.after == -1: 
 				while self.move('left'): pass
@@ -128,12 +139,11 @@ class Piece:
 			if das and self.arrT.after == -1: 
 				while self.move('right'): pass
 			else: self.move('right')
-		if Input.pressed('z'):
-			self.rotate('left')
-		if Input.pressed('x'):
-			self.rotate('right')
 
-		Input.update()
+		if Input.pressed('rotateCcw'):
+			self.rotate('left')
+		if Input.pressed('rotateCw'):
+			self.rotate('right')
 
 		if self.collides('down'):
 			if self.setT.check() and not self.hasSet:
@@ -151,10 +161,6 @@ class Piece:
 
 	def show(self):
 		screen = self.field.screen
-
-		things = [Input.PREVDOWN,Input.DOWN,Input.UP]
-		for y,i in enumerate(things):
-			screen.print_at(str(i),0,y)
 
 		oldY = self.y
 		while self.move('down'): pass
