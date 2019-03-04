@@ -1,6 +1,7 @@
 from asciimatics.screen import Screen
 from asciimatics.event import KeyboardEvent
 from field import Field
+import time
 
 import Input
 
@@ -18,7 +19,9 @@ def background(screen,color=0):
 
 def main(screen):
     field = Field(screen,Input)
+    framerate = 1/60
     while True:
+        start = time.perf_counter()
         Input.update()
         background(screen)
         ev = screen.get_event()
@@ -30,5 +33,8 @@ def main(screen):
         field.show()
 
         screen.refresh()
+        end = time.perf_counter()
+        if end - start < framerate:
+            time.sleep(framerate - (end - start))
 
 Screen.wrapper(main)
