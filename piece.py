@@ -36,12 +36,12 @@ class Piece:
 
 		self.hasSet = False
 		# these are all in frames and not in seconds
-		self.setT = Timer(120, loop=False)
+		self.setT = Timer(60, loop=False)
 		self.fallT = Timer(60)
-		self.softDropT = Timer(5)
+		self.softDropT = Timer(1)
 
-		self.dasT = Timer(30, loop=False)
-		self.arrT = Timer(0)
+		self.dasT = Timer(11, loop=False)
+		self.arrT = Timer(-1)
 
 		updateColors(self.field.screen)
 
