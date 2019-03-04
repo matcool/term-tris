@@ -20,7 +20,7 @@ def background(screen,color=0):
 def main(screen):
     framerate = 1/60
     dt = 0
-    mode = modes.MainMenu(screen, Input)
+    mode = modes.MainMenu(screen, Input, True)
     while True:
         start = time.perf_counter()
         Input.update()

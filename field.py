@@ -91,15 +91,27 @@ class Field:
 		for y in range(self.height):
 			for x in range(self.width):
 				c = ' '
-				if x == 0 or x == self.width - 1: c = '|'
-				elif y == 0 or y == self.height - 1: c = '-'
+				tiles = ['│','─','┌','┐','└','┘']
+				if x == 0:
+					if y == 0: c = tiles[2]
+					elif y == self.height - 1: c = tiles[4]
+					else: c = tiles[0]
+				elif x == self.width - 1:
+					if y == 0: c = tiles[3]
+					elif y == self.height - 1: c = tiles[5]
+					else: c = tiles[0]
+				elif y == 0 or y == self.height - 1:
+					c = tiles[1]
+
 				cell = self.getCell(x, y + self.hidden)
 				bg = Colors[cell] if cell != None else 0
 				if cell != None: c = ' '
-				# elif c == ' ':
-				# 	if (x + y) % 2 == 0:
-				# 		c = '#'
-				self.screen.print_at(c*2, x * 2 + self.x, y + self.y, bg=bg)
+
+				tmp = tiles[1] if y == 0 or y == self.height - 1 and cell == None else ' '
+				if x == 0: c += tmp
+				elif x == self.width - 1: c = tmp + c
+				else: c = c*2
+				self.screen.print_at(c, x * 2 + self.x, y + self.y, bg=bg)
 
 		self.active.show()
 
