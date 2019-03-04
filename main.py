@@ -2,7 +2,7 @@ from asciimatics.screen import Screen
 from asciimatics.event import KeyboardEvent
 from field import Field
 import time
-
+import modes
 import Input
 
 Input.bind('left', 'left')
@@ -18,9 +18,9 @@ def background(screen,color=0):
         screen.print_at(' '*screen.width, 0, y, bg=color)
 
 def main(screen):
-    field = Field(screen,Input)
     framerate = 1/60
     dt = 0
+    mode = modes.Basic(screen,Input)
     while True:
         start = time.perf_counter()
         Input.update()
@@ -30,8 +30,7 @@ def main(screen):
         if key in (ord('Q'), ord('q')):
             return
 
-        field.update(key, dt)
-        field.show()
+        mode.run(key, dt)
 
         screen.refresh()
         end = time.perf_counter()
