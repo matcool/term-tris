@@ -21,6 +21,7 @@ class Field:
 
 		self.held = None
 		self.hasHeld = False
+		self.lines = 0
 
 		updateColors(self.screen)
 
@@ -61,6 +62,7 @@ class Field:
 	def clearLines(self):
 		for y in range(self.height + self.hidden):#range(self.height + self.hidden - 1, 0, -1):
 			if all(self.grid[y * self.width : (y + 1) * self.width]):
+				self.lines += 1
 				self.move('down', y)
 
 	def move(self, dir, yOff=None):
