@@ -35,7 +35,7 @@ class Piece:
 		self.rotation = 0
 
 		self.hasSet = False
-		# these are all in frames and not in seconds
+		# these are all in seconds
 		self.setT = Timer(1, loop=False)
 		self.fallT = Timer(1)
 		self.softDropT = Timer(0.01)
