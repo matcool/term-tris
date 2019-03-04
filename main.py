@@ -20,7 +20,7 @@ def background(screen,color=0):
 def main(screen):
     framerate = 1/60
     dt = 0
-    mode = modes.Basic(screen, Input)
+    mode = modes.MainMenu(screen, Input)
     while True:
         start = time.perf_counter()
         Input.update()
@@ -29,6 +29,8 @@ def main(screen):
         key = ev.key_code if isinstance(ev, KeyboardEvent) else None
         if key in (ord('Q'), ord('q')):
             return
+        elif key in (ord('E'), ord('e')):
+            mode = modes.MainMenu(screen, Input)
 
         mode.run(key, dt)
 
