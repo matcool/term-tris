@@ -73,8 +73,8 @@ class Field:
 					else:
 						self.setCell(x, y, self.getCell(x, y - 1))
 
-	def update(self, key):
-		self.active.update(key)
+	def update(self, key, dt):
+		self.active.update(key, dt)
 		if self.active.hasSet:
 			self.clearLines()
 			self.newActive()

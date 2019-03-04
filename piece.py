@@ -9,12 +9,12 @@ class Timer:
 	def reset(self):
 		self.timer = 0
 
-	def check(self, add=True):
+	def check(self, dt=None):
 		old = self.timer
-		if add:
-			self.timer += 1
+		if dt != None:
+			self.timer += dt
 		if old >= self.after:
-			if self.loop and add:
+			if self.loop and dt != None:
 				self.timer = 0
 			return True
 		return False
@@ -36,11 +36,11 @@ class Piece:
 
 		self.hasSet = False
 		# these are all in frames and not in seconds
-		self.setT = Timer(60, loop=False)
-		self.fallT = Timer(60)
-		self.softDropT = Timer(1)
+		self.setT = Timer(1, loop=False)
+		self.fallT = Timer(1)
+		self.softDropT = Timer(0.01)
 
-		self.dasT = Timer(11, loop=False)
+		self.dasT = Timer(180/1000, loop=False)
 		self.arrT = Timer(-1)
 
 		updateColors(self.field.screen)
@@ -106,29 +106,29 @@ class Piece:
 
 		return False
 
-	def update(self, key):
+	def update(self, key, dt):
 		if self.field.Input.pressed('hardDrop'):
 			while self.move('down'): pass
 			self.set()
 
 		if self.field.Input.down('softDrop'):
-			if self.softDropT.check():
+			if self.softDropT.check(dt):
 				self.move('down')
 
 		if self.field.Input.down('left') and not self.field.Input.pressed('right'):
 			if self.field.Input.pressed('left'): self.dasT.reset()
-			das = self.dasT.check()
+			das = self.dasT.check(dt)
 			if das and self.arrT.after == -1: 
 				while self.move('left'): pass
-			elif self.field.Input.pressed('left') or (das and self.arrT.check()):
+			elif self.field.Input.pressed('left') or (das and self.arrT.check(dt)):
 				self.move('left')
 
 		elif self.field.Input.down('right') and not self.field.Input.pressed('left'):
 			if self.field.Input.pressed('right'): self.dasT.reset()
-			das = self.dasT.check()
+			das = self.dasT.check(dt)
 			if das and self.arrT.after == -1: 
 				while self.move('right'): pass
-			elif self.field.Input.pressed('right') or (das and self.arrT.check()):
+			elif self.field.Input.pressed('right') or (das and self.arrT.check(dt)):
 				self.move('right')
 
 		else:
@@ -141,10 +141,10 @@ class Piece:
 			self.rotate('right')
 
 		if self.collides('down'):
-			if self.setT.check() and not self.hasSet:
+			if self.setT.check(dt) and not self.hasSet:
 				self.set()
 		else:
-			if self.fallT.check():
+			if self.fallT.check(dt):
 				self.move('down')
 
 	def set(self):

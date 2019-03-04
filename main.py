@@ -20,6 +20,7 @@ def background(screen,color=0):
 def main(screen):
     field = Field(screen,Input)
     framerate = 1/60
+    dt = 0
     while True:
         start = time.perf_counter()
         Input.update()
@@ -29,12 +30,13 @@ def main(screen):
         if key in (ord('Q'), ord('q')):
             return
 
-        field.update(key)
+        field.update(key, dt)
         field.show()
 
         screen.refresh()
         end = time.perf_counter()
         if end - start < framerate:
             time.sleep(framerate - (end - start))
+        dt = time.perf_counter() - start
 
 Screen.wrapper(main)
