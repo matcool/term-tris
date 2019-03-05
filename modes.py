@@ -13,6 +13,7 @@ class MainMenu:
         self.Input = Input
         self.options = [
             ('Normal', Basic, lambda x: Basic.__init__(x, x.screen, x.Input)),
+            ('Multiplayer', Multiplayer, lambda x: Multiplayer.__init__(x, x.screen, x.Input)),
             ('20L Sprint', Sprint, lambda x: Sprint.__init__(x, 20, x.screen, x.Input)),
             ('40L Sprint', Sprint, lambda x: Sprint.__init__(x, 40, x.screen, x.Input)),
         ]
@@ -69,12 +70,19 @@ class MainMenu:
 
         return sy+size
 
-
 class Basic:
     def __init__(self, screen, Input):
         self.screen = screen
         self.Input = Input
         self.field = Field(screen,Input)
+
+    def run(self, key, dt):
+        self.field.update(key, dt)
+        self.field.show()
+
+class Multiplayer(Basic):
+    def __init__(self, screen, Input):
+        super().__init__(screen, Input)
         self.response = None
         self.last = None
         self.timer = Timer(2)
@@ -100,8 +108,7 @@ class Basic:
         self.thread.start()
 
     def run(self, key, dt):
-        self.field.update(key, dt)
-        self.field.show()
+        super().run(key, dt)
         self.screen.print_at(str(self.uuid),0,0)
         self.screen.print_at(str(self.fields),0,1)
         self.screen.print_at(str(len(self.others)),0,2)
