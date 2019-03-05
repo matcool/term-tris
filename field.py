@@ -17,6 +17,15 @@ class Field:
 		self.pieces = list('IJLOSTZ')
 		self.bag = []
 		self.upcoming = []
+
+		self.setAfter = 1
+		self.gravity = 1
+		self.softDropAfter = 0.01
+
+		self.das = 180/1000
+		self.arr = -1
+
+
 		if not basic:
 			self.newActive()
 

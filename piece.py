@@ -11,19 +11,19 @@ class Piece:
 			self.x = x
 			self.y = y
 		else:
-			self.x = self.field.width // 2 - self.size // 2
+			self.x = int(self.field.width / 2 - self.size / 2)
 			self.y = 1
 
 		self.rotation = 0
 
 		self.hasSet = False
 		# these are all in seconds
-		self.setT = Timer(1, loop=False)
-		self.fallT = Timer(1)
-		self.softDropT = Timer(0.01)
+		self.setT = Timer(self.field.setAfter, loop=False)
+		self.fallT = Timer(self.field.gravity)
+		self.softDropT = Timer(self.field.softDropAfter)
 
-		self.dasT = Timer(180/1000, loop=False)
-		self.arrT = Timer(-1)
+		self.dasT = Timer(self.field.das, loop=False)
+		self.arrT = Timer(self.field.arr)
 
 		updateColors(self.field.screen)
 
