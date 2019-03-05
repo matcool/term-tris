@@ -4,7 +4,7 @@ from constants import *
 from helpers import *
 
 class Field:
-	def __init__(self, screen, Input=None):
+	def __init__(self, screen, Input=None, basic=False):
 		self.screen = screen
 		self.Input = Input
 		self.width = 10
@@ -17,12 +17,14 @@ class Field:
 		self.pieces = list('IJLOSTZ')
 		self.bag = []
 		self.upcoming = []
-
-		self.newActive()
+		if not basic:
+			self.newActive()
 
 		self.held = None
 		self.hasHeld = False
 		self.lines = 0
+
+		self.basic = basic
 
 		updateColors(self.screen)
 
@@ -100,25 +102,26 @@ class Field:
 					c = ' '
 					self.screen.print_at(c*2, x * 2 + self.x, y + self.y, bg=bg)
 
-		self.active.show()
+		if not self.basic:
+			self.active.show()
 
-		# upcoming
-		yOff = 0
-		for p in self.getUpcoming(False, 5):
-			shape = Shapes[p]
-			xOff = self.screen.width // 2 + self.width
-			for y, row in enumerate(shape):
-				for x, cell in enumerate(row):
-					if cell == 1:
-						self.screen.print_at(' '*2, x*2 + xOff + 1, y + yOff + self.y, bg=Colors[p])
-			yOff += len(shape)
-			if p == 'O': yOff += 1
+			# upcoming
+			yOff = 0
+			for p in self.getUpcoming(False, 5):
+				shape = Shapes[p]
+				xOff = self.screen.width // 2 + self.width
+				for y, row in enumerate(shape):
+					for x, cell in enumerate(row):
+						if cell == 1:
+							self.screen.print_at(' '*2, x*2 + xOff + 1, y + yOff + self.y, bg=Colors[p])
+				yOff += len(shape)
+				if p == 'O': yOff += 1
 
-		# held
-		if self.held:
-			shape = Shapes[self.held]
-			xOff = self.screen.width // 2 - self.width - len(shape) - 4
-			for y, row in enumerate(shape):
-				for x, cell in enumerate(row):
-					if cell == 1:
-						self.screen.print_at(' '*2, x * 2 + xOff, y + self.y, bg=Colors[self.held])
+			# held
+			if self.held:
+				shape = Shapes[self.held]
+				xOff = self.screen.width // 2 - self.width - len(shape) - 4
+				for y, row in enumerate(shape):
+					for x, cell in enumerate(row):
+						if cell == 1:
+							self.screen.print_at(' '*2, x * 2 + xOff, y + self.y, bg=Colors[self.held])

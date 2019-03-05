@@ -3,6 +3,9 @@ from constants import *
 from helpers import *
 from timer import *
 import time
+import asyncio
+import websockets
+import threading
 
 class MainMenu:
     def __init__(self, screen, Input, animate=False):
@@ -72,10 +75,77 @@ class Basic:
         self.screen = screen
         self.Input = Input
         self.field = Field(screen,Input)
+        self.response = None
+        self.last = None
+        self.timer = Timer(2)
+        self.loop = asyncio.get_event_loop()
+        self.thread = None
+        self.uuid = None
+        self.connect('login')
+        self.others = []
+        self.fields = []
+        self.debug = ''
+
+    def connect(self, path, *send):
+        self.response = None
+        self.last = path
+        def blocking(loop):
+            async def connect():
+                async with websockets.connect('ws://localhost:8765/'+path) as websocket:
+                    for i in send:
+                        await websocket.send(i)
+                    msg = await websocket.recv()
+                    self.response = msg
+            loop.run_until_complete(connect())
+        self.thread = threading.Thread(target=blocking,args=(self.loop,))
+        self.thread.start()
 
     def run(self, key, dt):
         self.field.update(key, dt)
         self.field.show()
+        self.screen.print_at(str(self.uuid),0,0)
+        self.screen.print_at(str(self.fields),0,1)
+        self.screen.print_at(str(len(self.others)),0,2)
+        for f in self.fields:
+            f.show()
+
+        if self.response != None and self.last != None:
+            if self.last == 'login':
+                self.uuid = self.response
+                self.last = None
+                self.response = None
+            elif self.last == 'send':
+                self.debug += 'i am calling it!'
+                self.response = None
+                self.connect('get', self.uuid)
+                self.debug += 'it is cald'
+            elif self.last == 'get':
+                self.debug += 'i have been called!!'
+                self.others = self.response.split(',')
+                self.last = None 
+                self.response = None
+                self.fields = []
+                for o in self.others:
+                    f = Field(self.screen,basic=True)
+                    f.x = self.screen.width - 20
+                    f.grid = list(o)
+                    f.grid = [None if i == ' ' else i for i in f.grid]
+                    self.fields.append(f)
+            
+        elif self.last == None:
+            if self.timer.check(dt):
+                fieldstr = ''.join(i if i != None else ' ' for i in self.field.grid)
+                self.connect('send',self.uuid,fieldstr)
+
+    def quit(self):
+        async def connect():
+            async with websockets.connect('ws://localhost:8765/logout') as websocket:
+                await websocket.send(self.uuid)
+        self.loop.run_until_complete(connect())
+        self.loop.close()
+
+                
+
 
 class Sprint(Basic):
     def __init__(self, lines, *args):

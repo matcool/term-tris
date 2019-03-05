@@ -28,6 +28,8 @@ def main(screen):
         ev = screen.get_event()
         key = ev.key_code if isinstance(ev, KeyboardEvent) else None
         if key in (ord('Q'), ord('q')):
+            if hasattr(mode,'quit'):
+                mode.quit()
             return
         elif key in (ord('E'), ord('e')):
             mode = modes.MainMenu(screen, Input)
