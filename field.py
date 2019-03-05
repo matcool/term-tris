@@ -109,7 +109,7 @@ class Field:
 			yOff = 0
 			for p in self.getUpcoming(False, 5):
 				shape = Shapes[p]
-				xOff = self.screen.width // 2 + self.width
+				xOff = self.x + self.width * 2
 				for y, row in enumerate(shape):
 					for x, cell in enumerate(row):
 						if cell == 1:
@@ -120,7 +120,7 @@ class Field:
 			# held
 			if self.held:
 				shape = Shapes[self.held]
-				xOff = self.screen.width // 2 - self.width - len(shape) - 4
+				xOff = self.x - len(shape) - 4
 				for y, row in enumerate(shape):
 					for x, cell in enumerate(row):
 						if cell == 1:

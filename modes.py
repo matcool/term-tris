@@ -115,7 +115,7 @@ class Multiplayer(Basic):
         for f in self.fields:
             f.show()
 
-        if self.response != None and self.last != None:
+        if self.response != None and self.last != None and not self.loop.is_running():
             p = self.last
             if self.last == 'login':
                 self.uuid = self.response
@@ -126,14 +126,14 @@ class Multiplayer(Basic):
                 if self.others[0] == '':
                     self.others = []
                 self.fields = []
-                xSpacing = self.screen.width // (len(self.others) + 2)
+                self.field.x = 10 # 10 because its the average width of a held piece times 2 and plus 2 for spacing
+                xSpacing = (self.screen.width - self.field.width - 20) // (len(self.others) + 1)
                 for j,o in enumerate(self.others):
                     f = Field(self.screen,basic=True)
-                    f.x = (j + 2) * xSpacing
+                    f.x = (j+1) * xSpacing + self.field.x + self.field.width + 10
                     f.grid = list(o)
                     f.grid = [None if i == ' ' else i for i in f.grid]
                     self.fields.append(f)
-                self.field.x = xSpacing
 
             if p == self.last:
                 self.last = None
