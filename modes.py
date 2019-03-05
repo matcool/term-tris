@@ -1,6 +1,7 @@
 from field import *
 from constants import *
 from helpers import *
+from timer import *
 import time
 
 class MainMenu:
@@ -15,9 +16,9 @@ class MainMenu:
         self.selected = 0
         self.animate = animate
         self.typedIndex = 0
-        self.typeTimer = 0
-        self.beginTimer = 0
-        self.blinkTimer = 5
+        self.typeTimer = Timer(7)
+        self.beginTimer = Timer(30,loop=False)
+        self.blinkTimer = Timer(60)
         updateColors(screen)
 
     def run(self, key, dt):
@@ -53,21 +54,15 @@ class MainMenu:
             self.screen.print_at(text, corners[0][0] + 5, corners[0][1] + 4)
         else:
             self.screen.print_at(text[:self.typedIndex], corners[0][0] + 5, corners[0][1] + 4)
-            self.beginTimer += 1
-            if self.beginTimer > 30:
-                self.beginTimer -= 1
-                self.typeTimer += 1
-                if self.typeTimer == 7:
-                    self.typeTimer = 0
-                    self.typedIndex += 1
-                    if self.typedIndex == len(text):
-                        self.animate = False
+            if self.beginTimer.check(1) and self.typeTimer.check(1):
+                self.typedIndex += 1
+                if self.typedIndex == len(text):
+                    self.animate = False
 
         x = len(text) if not self.animate else self.typedIndex
-        blinkAfter = 30
-        c = 7 if self.blinkTimer < blinkAfter else 0
+        c = 7 if self.blinkTimer.timer < self.blinkTimer.after/2 else 0
         self.screen.print_at(' ', corners[0][0] + 5 + x, corners[0][1] + 4, bg=c)
-        self.blinkTimer = (self.blinkTimer + 1) % (blinkAfter * 2)
+        self.blinkTimer.check(1)
 
         return sy+size
 
