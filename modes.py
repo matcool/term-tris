@@ -89,16 +89,20 @@ class Multiplayer(Basic):
         self.loop = asyncio.get_event_loop()
         self.thread = None
         self.uuid = None
+        self.host = '10.0.0.107'
+        self.port = 8000
         self.connect('login')
         self.others = []
         self.fields = []
 
     def connect(self, path, *send):
+        if self.loop.is_running():
+            return
         self.response = None
         self.last = path
         def blocking(loop):
             async def connect():
-                async with websockets.connect('ws://localhost:8765/'+path) as websocket:
+                async with websockets.connect(f'ws://{self.host}:{self.port}/{path}') as websocket:
                     for i in send:
                         await websocket.send(i)
                     msg = await websocket.recv()
@@ -146,7 +150,7 @@ class Multiplayer(Basic):
 
     def quit(self):
         async def connect():
-            async with websockets.connect('ws://localhost:8765/logout') as websocket:
+            async with websockets.connect(f'ws://{self.host}:{self.port}/logout') as websocket:
                 await websocket.send(self.uuid)
         self.loop.run_until_complete(connect())
 
