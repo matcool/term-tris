@@ -114,15 +114,19 @@ class Basic:
                 self.uuid = self.response
             elif self.last == 'send':
                 self.connect('get', self.uuid)
-            elif self.last == 'get' and len(self.response) > 0:
+            elif self.last == 'get':
                 self.others = self.response.split(',')
+                if self.others[0] == '':
+                    self.others = []
                 self.fields = []
-                for o in self.others:
+                xSpacing = self.screen.width // (len(self.others) + 2)
+                for j,o in enumerate(self.others):
                     f = Field(self.screen,basic=True)
-                    f.x = self.screen.width - 20
+                    f.x = (j + 2) * xSpacing
                     f.grid = list(o)
                     f.grid = [None if i == ' ' else i for i in f.grid]
                     self.fields.append(f)
+                self.field.x = xSpacing
 
             if p == self.last:
                 self.last = None

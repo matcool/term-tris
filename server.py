@@ -15,7 +15,7 @@ async def server(websocket, path):
         u = await websocket.recv()
         field = await websocket.recv()
         players[u] = field
-        print(f'{u} sent their field: {field}')
+        print(f'{u} sent their field')
         await websocket.send('ok')
     elif path == '/get':
         u = await websocket.recv()
