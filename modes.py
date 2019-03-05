@@ -1,5 +1,6 @@
 from field import *
 from constants import *
+from helpers import *
 import time
 
 class MainMenu:
@@ -20,43 +21,31 @@ class MainMenu:
         updateColors(screen)
 
     def run(self, key, dt):
+        yOff = self.drawlogo() + 1
+
         for i,o in enumerate(self.options):
             attr = 3 if i == self.selected else 0
             self.screen.print_at(o[0],
                 self.screen.width//2-len(o[0])//2,
-                self.screen.height-len(self.options)+i-self.screen.height//4,
+                yOff + i,
                 attr=attr)
-
-        self.drawlogo()
 
         if key == self.screen.KEY_DOWN:
             self.selected = (self.selected + 1) % len(self.options)
         elif key == self.screen.KEY_UP:
             self.selected = (self.selected - 1) % len(self.options)
         # enter
-        elif key == 13:
+        elif key in (10,13):
             self.__class__ = self.options[self.selected][1]
             self.options[self.selected][2](self)
 
     def drawlogo(self):
-        tiles = ['│','─','┌','┐','└','┘']
         size = self.screen.height // 2
         sx = self.screen.width // 2 - size
         sy = size // 4
-        def line(x1,y1,x2,y2,char):
-            self.screen.move(int(x1),int(y1))
-            self.screen.draw(int(x2),int(y2),char=char)
         corners = [(sx,sy),(sx+size*2,sy),(sx,sy+size),(sx+size*2,sy+size)]
         corners = [tuple(map(int,i)) for i in corners]
-        line(*corners[0],*corners[1],tiles[1])
-        line(*corners[0],*corners[2],tiles[0])
-        line(*corners[2],*corners[3],tiles[1])
-        line(*corners[1],*corners[3],tiles[0])
-        self.screen.print_at(tiles[2],*corners[0])
-        self.screen.print_at(tiles[3],*corners[1])
-        self.screen.print_at(tiles[4],*corners[2])
-        self.screen.print_at(tiles[5],*corners[3])
-
+        fancyRect(self.screen,sx,sy,size*2,size)
 
         self.screen.print_at('>', corners[0][0] + 3, corners[0][1] + 4)
         text = 'term-tris'
@@ -79,6 +68,8 @@ class MainMenu:
         c = 7 if self.blinkTimer < blinkAfter else 0
         self.screen.print_at(' ', corners[0][0] + 5 + x, corners[0][1] + 4, bg=c)
         self.blinkTimer = (self.blinkTimer + 1) % (blinkAfter * 2)
+
+        return sy+size
 
 
 class Basic:
