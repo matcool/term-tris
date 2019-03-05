@@ -27,7 +27,6 @@ async def server(websocket, path):
             if field == None:
                 continue
             fields.append(field)
-        print(f'found these: {repr(fields)}')
         await websocket.send(','.join(fields))
     elif path == '/logout':
         u = await websocket.recv()

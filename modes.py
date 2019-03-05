@@ -84,7 +84,6 @@ class Basic:
         self.connect('login')
         self.others = []
         self.fields = []
-        self.debug = ''
 
     def connect(self, path, *send):
         self.response = None
@@ -110,20 +109,13 @@ class Basic:
             f.show()
 
         if self.response != None and self.last != None:
+            p = self.last
             if self.last == 'login':
                 self.uuid = self.response
-                self.last = None
-                self.response = None
             elif self.last == 'send':
-                self.debug += 'i am calling it!'
-                self.response = None
                 self.connect('get', self.uuid)
-                self.debug += 'it is cald'
-            elif self.last == 'get':
-                self.debug += 'i have been called!!'
+            elif self.last == 'get' and len(self.response) > 0:
                 self.others = self.response.split(',')
-                self.last = None 
-                self.response = None
                 self.fields = []
                 for o in self.others:
                     f = Field(self.screen,basic=True)
@@ -131,6 +123,10 @@ class Basic:
                     f.grid = list(o)
                     f.grid = [None if i == ' ' else i for i in f.grid]
                     self.fields.append(f)
+
+            if p == self.last:
+                self.last = None
+                self.response = None
             
         elif self.last == None:
             if self.timer.check(dt):
@@ -142,7 +138,6 @@ class Basic:
             async with websockets.connect('ws://localhost:8765/logout') as websocket:
                 await websocket.send(self.uuid)
         self.loop.run_until_complete(connect())
-        self.loop.close()
 
                 
 
