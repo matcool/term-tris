@@ -32,6 +32,8 @@ def main(screen):
                 mode.quit()
             return
         elif key in (ord('E'), ord('e')):
+            if hasattr(mode,'quit'):
+                mode.quit()
             mode = modes.MainMenu(screen, Input)
 
         mode.run(key, dt)
