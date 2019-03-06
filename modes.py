@@ -6,6 +6,7 @@ import time
 import asyncio
 import websockets
 import threading
+import json
 
 class MainMenu:
     def __init__(self, screen, Input, animate=False):
@@ -89,8 +90,12 @@ class Multiplayer(Basic):
         self.loop = asyncio.get_event_loop()
         self.thread = None
         self.uuid = None
-        self.host = '10.0.0.107'
-        self.port = 8000
+        with open('config.json','r') as f:
+            a = {}
+            js = json.load(f)['client'].get('multiplayer',a)
+            self.host = js.get('host','localhost')
+            self.port = js.get('port',8000)
+                
         self.connect('login')
         self.others = []
         self.fields = []

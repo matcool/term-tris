@@ -2,6 +2,7 @@ import asyncio
 import websockets
 import uuid
 import random
+import json
 
 players = {}
 """
@@ -66,9 +67,14 @@ async def server(websocket, path):
         else:
             await websocket.send('')
 
+with open('config.json','r') as f:
+    a = {}
+    js = json.load(f).get('server',a)
+    host = js.get('host','localhost')
+    port = js.get('port',8000)
+    timeout = js.get('timeout',10)
 
-
-start_server = websockets.serve(server, '10.0.0.107', 8000)
+start_server = websockets.serve(server, host, port)
 
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()

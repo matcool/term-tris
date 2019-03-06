@@ -1,0 +1,22 @@
+{
+    "client": {
+        "controls": {
+            "left": "left",
+            "right": "right",
+            "softDrop": "down",
+            "hardDrop": "up",
+            "rotateCw": "x",
+            "rotateCcw": "z",
+            "hold": "c"
+        },
+        "multiplayer" : {
+            "host": "localhost",
+            "port": 8000
+        }
+    },
+    "server": {
+        "host": "localhost",
+        "port": 8000,
+        "timeout": 10
+    }
+}

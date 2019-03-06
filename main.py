@@ -4,14 +4,12 @@ from field import Field
 import time
 import modes
 import Input
+import json
 
-Input.bind('left', 'left')
-Input.bind('right', 'right')
-Input.bind('down', 'softDrop')
-Input.bind('up', 'hardDrop')
-Input.bind('x', 'rotateCw')
-Input.bind('z', 'rotateCcw')
-Input.bind('c', 'hold')
+with open('config.json','r') as f:
+    js = json.load(f)['client']['controls']
+    for action, key in js.items():
+        Input.bind(key, action)
 
 def background(screen,color=0):
     for y in range(screen.height):
