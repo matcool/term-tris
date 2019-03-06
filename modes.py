@@ -94,6 +94,7 @@ class Multiplayer(Basic):
         self.connect('login')
         self.others = []
         self.fields = []
+        self.prevLines = 0
 
     def connect(self, path, *send):
         if self.loop.is_running():
@@ -114,8 +115,6 @@ class Multiplayer(Basic):
     def run(self, key, dt):
         super().run(key, dt)
         self.screen.print_at(str(self.uuid),0,0)
-        self.screen.print_at(str(self.fields),0,1)
-        self.screen.print_at(str(len(self.others)),0,2)
         for f in self.fields:
             f.show()
 
@@ -138,6 +137,23 @@ class Multiplayer(Basic):
                     f.grid = list(o)
                     f.grid = [None if i == ' ' else i for i in f.grid]
                     self.fields.append(f)
+
+                self.connect('garbage', self.uuid, str(self.field.lines - self.prevLines))
+                self.prevLines = self.field.lines
+            elif self.last == 'garbage':
+                garbage = self.response
+                if garbage != '':
+                    garbage = [tuple(map(int,i.split(','))) for i in garbage.split(';')]
+                    gblock = 'Z'
+                    for g in garbage:
+                        for _ in range(g[0]): self.field.move('up')
+                        for y in range(g[0]):
+                            for x in range(self.field.width):
+                                if x == g[1]:
+                                    continue
+                                self.field.setCell(x,(self.field.height + self.field.hidden - 1) - y, gblock)
+
+
 
             if p == self.last:
                 self.last = None

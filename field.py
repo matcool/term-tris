@@ -86,6 +86,13 @@ class Field:
 						self.setCell(x, y, None)
 					else:
 						self.setCell(x, y, self.getCell(x, y - 1))
+		elif dir == 'up':
+			for y in range(0, yOff):
+				for x in range(self.width):
+					if y == self.height + self.hidden:
+						self.setCell(x, y, None)
+					else:
+						self.setCell(x, y, self.getCell(x, y + 1))
 
 	def update(self, key, dt):
 		self.active.update(key, dt)
