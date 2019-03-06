@@ -3,6 +3,7 @@ import websockets
 import uuid
 import random
 import json
+from time import perf_counter
 
 players = {}
 """
@@ -11,6 +12,7 @@ players is supposed to have this structure:
         uuid : {
             'field' : (grid as a flat string),
             'garbage' : [(amount, x), (3, 1), (10, 9)]
+            'last-update': 3.543
         }
     }
 
@@ -20,19 +22,22 @@ uid_display = 5
 
 async def server(websocket, path):
     global players
+    time = perf_counter()
     if path == '/login':
         u = uuid.uuid4().hex
-        players[u] = {}
+        players[u] = {'last-update':time}
         print('Someone logged in: '+u[:uid_display])
         await websocket.send(u)
     elif path == '/send':
         u = await websocket.recv()
         field = await websocket.recv()
         players[u]['field'] = field
+        players[u]['last-update'] = time
         print(f'{u[:uid_display]} sent their field')
-        await websocket.send('ok')
+        await websocket.send('')
     elif path == '/get':
         u = await websocket.recv()
+        players[u]['last-update'] = time
         fields = []
         print(f'{u[:uid_display]} requested other fields')
         for uid, player in players.items():
@@ -48,6 +53,7 @@ async def server(websocket, path):
     elif path == '/garbage':
         u = await websocket.recv()
         lines = int(await websocket.recv())
+        players[u]['last-update'] = time
 
         print(f'{u[:uid_display]} sent {lines} lines.')
 
@@ -74,7 +80,24 @@ with open('config.json','r') as f:
     port = js.get('port',8000)
     timeout = js.get('timeout',10)
 
+async def check_timeout():
+    global players
+    while True:
+        time = perf_counter()
+        to_timeout = []
+        for player, data in players.items():
+            if time - data.get('last-update',0) >= timeout:
+                to_timeout.append(player)
+        for p in to_timeout:
+            print(f'{p[:uid_display]} has been timeouted.')
+            players.pop(p)
+        await asyncio.sleep(timeout/2)
+
+
 start_server = websockets.serve(server, host, port)
 
-asyncio.get_event_loop().run_until_complete(start_server)
+asyncio.get_event_loop().run_until_complete(asyncio.gather(
+    start_server,
+    check_timeout()
+    ))
 asyncio.get_event_loop().run_forever()
