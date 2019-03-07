@@ -100,6 +100,7 @@ class Multiplayer(Basic):
         self.others = []
         self.fields = []
         self.prevLines = 0
+        self.message = None
 
     def connect(self, path, *send):
         if self.loop.is_running():
@@ -113,17 +114,26 @@ class Multiplayer(Basic):
                         await websocket.send(i)
                     msg = await websocket.recv()
                     self.response = msg
-            loop.run_until_complete(connect())
+            try:
+                loop.run_until_complete(connect())
+            except Exception:
+                self.response = Exception
         self.thread = threading.Thread(target=blocking,args=(self.loop,))
         self.thread.start()
 
     def run(self, key, dt):
-        super().run(key, dt)
-        self.screen.print_at(str(self.uuid),0,0)
-        for f in self.fields:
-            f.show()
+        if self.message != None:
+            self.screen.print_at(self.message,int(self.screen.width / 2 - len(self.message) / 2), self.screen.height//2, bg=1, colour=7)
+        else:
+            super().run(key, dt)
+            self.screen.print_at(str(self.uuid),0,0)
+            for f in self.fields:
+                f.show()
 
-        if self.response != None and self.last != None and not self.loop.is_running():
+        if self.response == Exception:
+            self.message = 'An exception has occurred, press e to return.'
+            self.last = -1
+        elif self.response != None and self.last != None and not self.loop.is_running():
             p = self.last
             if self.last == 'login':
                 self.uuid = self.response
@@ -158,8 +168,6 @@ class Multiplayer(Basic):
                                     continue
                                 self.field.setCell(x,(self.field.height + self.field.hidden - 1) - y, gblock)
 
-
-
             if p == self.last:
                 self.last = None
                 self.response = None
@@ -170,10 +178,11 @@ class Multiplayer(Basic):
                 self.connect('send',self.uuid,fieldstr)
 
     def quit(self):
-        async def connect():
-            async with websockets.connect(f'ws://{self.host}:{self.port}/logout') as websocket:
-                await websocket.send(self.uuid)
-        self.loop.run_until_complete(connect())
+        if self.response != Exception:
+            async def connect():
+                async with websockets.connect(f'ws://{self.host}:{self.port}/logout') as websocket:
+                    await websocket.send(self.uuid)
+            self.loop.run_until_complete(connect())
 
                 
 
