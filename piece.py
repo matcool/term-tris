@@ -149,11 +149,10 @@ class Piece:
 				if self.shape[y][x] == 0:
 					continue
 				# draw ghost
-				c = Colors.get(self.type+'Ghost')
-				if c == None: c = Colors[self.type]
-				screen.print_at(' '*2, self.x * 2 + self.field.x + x * 2, hardDropY + self.field.y + y - self.field.hidden,
-								bg=c)
+				c = Colors.get(self.type+'Ghost', Colors[self.type])
+				screen.print_at(('▒' if screen.colours == 8 else ' ')*2, self.x * 2 + self.field.x + x * 2, hardDropY + self.field.y + y - self.field.hidden,
+								bg=c, colour=(5 if self.type == 'L' else 0))
 
-				screen.print_at(' '*2, self.x * 2 + self.field.x + x * 2, self.y + self.field.y + y - self.field.hidden,
-								bg=Colors[self.type])
+				screen.print_at(('▒' if screen.colours == 8 and self.type == 'L' else ' ')*2, self.x * 2 + self.field.x + x * 2, self.y + self.field.y + y - self.field.hidden,
+								bg=Colors[self.type], colour=1)
 

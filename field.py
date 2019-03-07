@@ -115,8 +115,8 @@ class Field:
 				cell = self.getCell(x, y + self.hidden)
 				if cell != None:
 					bg = Colors[cell]
-					c = ' '
-					self.screen.print_at(c*2, x * 2 + self.x, y + self.y, bg=bg)
+					c = '▒' if self.screen.colours == 8 and cell == 'L' else ' '
+					self.screen.print_at(c*2, x * 2 + self.x, y + self.y, bg=bg, colour=1)
 
 		if not self.basic:
 			self.active.show()
