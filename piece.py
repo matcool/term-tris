@@ -90,12 +90,14 @@ class Piece:
 
 	def update(self, key, dt):
 		if self.field.Input.pressed('hardDrop'):
-			while self.move('down'): pass
+			while self.move('down'):
+				self.field.score += 2
 			self.set()
 
 		if self.field.Input.down('softDrop'):
 			if self.softDropT.check(dt):
-				self.move('down')
+				if self.move('down'):
+					self.field.score += 1
 
 		if self.field.Input.down('left') and not self.field.Input.pressed('right'):
 			if self.field.Input.pressed('left'): self.dasT.reset()

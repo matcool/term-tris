@@ -25,6 +25,10 @@ class Field:
 		self.das = 180/1000
 		self.arr = -1
 
+		self.level = 1
+		self.score = 0
+		self.combo = -1
+
 
 		if not basic:
 			self.newActive()
@@ -72,10 +76,34 @@ class Field:
 		self.active = Piece(self, type)
 
 	def clearLines(self):
+		prevGrid = self.grid.copy()
+		prevLines = self.lines
 		for y in range(self.height + self.hidden):#range(self.height + self.hidden - 1, 0, -1):
 			if all(self.grid[y * self.width : (y + 1) * self.width]):
 				self.lines += 1
 				self.move('down', y)
+		self.updateScore(prevGrid, prevLines)
+
+	def updateScore(self, grid, lines):
+		index = lambda x,y: grid[y * self.width + x] if not self.outside(x,y) else None
+		cleared = self.lines - lines
+		if cleared == 0:
+			self.combo = -1
+		else:
+			self.combo += 1
+			self.score += 50 * self.combo * self.level
+		corners = sum((index(self.active.x, self.active.y) != None,
+					  index(self.active.x + 2, self.active.y) != None,
+					  index(self.active.x, self.active.y + 2) != None,
+					  index(self.active.x + 2, self.active.y + 2) != None))
+		if self.active.type == 'T' and corners >= 3:
+			scores = [400, 800, 1200, 1600]
+			self.score += scores[cleared] * self.level
+		else:
+			scores = [0, 100, 300, 500, 800]
+			self.score += scores[cleared] * self.level
+		
+
 
 	def move(self, dir, yOff=None):
 		if yOff == None: yOff = self.height + self.hidden
@@ -120,6 +148,7 @@ class Field:
 
 		if not self.basic:
 			self.active.show()
+			self.screen.print_at(str(self.score),0,0)
 
 			# upcoming
 			yOff = 0
