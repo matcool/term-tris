@@ -38,6 +38,7 @@ class Field:
 		self.lines = 0
 
 		self.basic = basic
+		self.lastClear = None
 
 		updateColors(self.screen)
 
@@ -85,25 +86,33 @@ class Field:
 		self.updateScore(prevGrid, prevLines)
 
 	def updateScore(self, grid, lines):
-		index = lambda x,y: grid[y * self.width + x] if not self.outside(x,y) else None
+		# Treat outside of grid as a filled cell
+		index = lambda x,y: grid[y * self.width + x] if not self.outside(x,y) else 1
 		cleared = self.lines - lines
 		if cleared == 0:
 			self.combo = -1
 		else:
 			self.combo += 1
 			self.score += 50 * self.combo * self.level
+
 		corners = sum((index(self.active.x, self.active.y) != None,
 					  index(self.active.x + 2, self.active.y) != None,
 					  index(self.active.x, self.active.y + 2) != None,
 					  index(self.active.x + 2, self.active.y + 2) != None))
-		if self.active.type == 'T' and corners >= 3:
-			scores = [400, 800, 1200, 1600]
-			self.score += scores[cleared] * self.level
+		if self.active.type == 'T' and corners >= 3 and self.active.lastMove.startswith('rotate'):
+			# Checks if the cell behind the T is filled
+			isMini = index(self.active.x + (1, 0, 1, 2)[self.active.rotation], self.active.y + (2, 1, 0, 1)[self.active.rotation]) != None
+			if cleared == 1 and isMini:
+				self.score += int(200 * self.level * (1.5 if self.lastClear == 'tspin' else 1))
+			else:
+				scores = [400, 800, 1200, 1600]
+				self.score += int(scores[cleared] * self.level * (1.5 if self.lastClear == 'tspin' else 1))
+			self.lastClear = 'tspin'
 		else:
 			scores = [0, 100, 300, 500, 800]
-			self.score += scores[cleared] * self.level
-		
-
+			self.score += int(scores[cleared] * self.level * (1.5 if self.lastClear == 'tetris' and cleared == 4 else 1))
+			if cleared == 4: self.lastClear = 'tetris'
+			elif cleared > 0: self.lastClear = None 
 
 	def move(self, dir, yOff=None):
 		if yOff == None: yOff = self.height + self.hidden

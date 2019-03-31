@@ -25,6 +25,8 @@ class Piece:
 		self.dasT = Timer(self.field.das, loop=False)
 		self.arrT = Timer(self.field.arr)
 
+		self.lastMove = None
+
 		updateColors(self.field.screen)
 
 	def rotate(self, dir):
@@ -47,11 +49,12 @@ class Piece:
 		if wallkick == None: wallkick = Wallkick['default']
 
 		testOffset = (2 * prevRot + (0 if dir == 'right' else -1)) % 8
-		for test in wallkick:
+		for testIndex, test in enumerate(wallkick):
 			offset = test[testOffset]
 			if not self.collides(None, *offset):
 				self.x += offset[0]
 				self.y += offset[1]
+				self.lastMove = f'rotate-{dir}{"-kick" if testIndex != 0 else ""}'
 				return
 		self.shape = oldShape
 		self.rotation = prevRot
@@ -84,6 +87,7 @@ class Piece:
 		if not self.collides(dir):
 			self.x += xOff
 			self.y += yOff
+			self.lastMove = 'move' + dir
 			return True
 
 		return False
@@ -130,6 +134,7 @@ class Piece:
 		else:
 			if self.fallT.check(dt):
 				self.move('down')
+				self.lastMove = 'gravity'
 
 	def set(self):
 		for y in range(self.size):
